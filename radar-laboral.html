@@ -1,0 +1,344 @@
+<title>Radar Laboral Enrique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una columna de lectura (~70ch) con fichas por oferta; los plazos van primero porque son lo urgente */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --ink:#18212b; --muted:#5b6672; --line:#dfe3e0;
+  --accent:#a8590a; --accent-soft:#f6e8d8;
+  --ok:#23704f; --ok-soft:#e1f1e8; --warn:#8a6100; --warn-soft:#f7edd2; --no:#7b8189; --no-soft:#eceeef;
+  --f-display:"Literata",Georgia,"Times New Roman",serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --surface:#19212a; --ink:#e7ebee; --muted:#9aa5b0; --line:#2a3440;
+  --accent:#e59a4c; --accent-soft:#3a2a1a;
+  --ok:#6cc79c; --ok-soft:#16352a; --warn:#e2bd5c; --warn-soft:#3a3016; --no:#9aa1a9; --no-soft:#262d35;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --surface:#19212a; --ink:#e7ebee; --muted:#9aa5b0; --line:#2a3440;
+  --accent:#e59a4c; --accent-soft:#3a2a1a;
+  --ok:#6cc79c; --ok-soft:#16352a; --warn:#e2bd5c; --warn-soft:#3a3016; --no:#9aa1a9; --no-soft:#262d35;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:700}
+h2{font-size:1.45rem;font-weight:700}
+h3{font-size:1.08rem;font-weight:700;font-family:var(--f-body)}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.mono{font-family:var(--f-mono);font-size:.86em}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+header{display:flex;flex-direction:column;gap:12px}
+.lede{font-size:1.06rem;max-width:62ch}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--f-mono);font-size:1.6rem;font-weight:500;font-variant-numeric:tabular-nums}
+.stat span{font-size:.82rem;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:16px}
+.intro{color:var(--muted);max-width:64ch}
+/* plazos */
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-left:2px solid var(--line);margin-left:6px}
+.timeline li{position:relative;padding:0 0 16px 20px;display:grid;grid-template-columns:6.2rem minmax(0,1fr);gap:4px 12px}
+.timeline li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.timeline li.hot::before{background:var(--accent)}
+.timeline .d{font-family:var(--f-mono);font-size:.86rem;font-variant-numeric:tabular-nums;color:var(--accent);font-weight:500}
+@media (max-width:440px){.timeline li{grid-template-columns:minmax(0,1fr)}}
+/* fichas */
+.cards{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.card-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chip{font-size:.72rem;font-weight:600;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.no{background:var(--no-soft);color:var(--no)}
+.chip.sec{background:var(--accent-soft);color:var(--accent)}
+.org{color:var(--muted);font-size:.92rem}
+dl{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:6px 12px;margin:0;font-size:.93rem}
+dt{color:var(--muted)}
+dd{margin:0;min-width:0}
+@media (max-width:440px){dl{grid-template-columns:minmax(0,1fr)}dt{margin-top:4px}}
+.do{border-top:1px dashed var(--line);padding-top:10px;font-size:.93rem}
+.do b{color:var(--accent)}
+.link{font-size:.9rem;word-break:break-all}
+/* listas compactas */
+.rows{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.rows li{padding:12px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:3px;font-size:.93rem}
+.rows li:first-child{border-top:0}
+.rows .t{font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.plan{counter-reset:p;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.plan li{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:10px;align-items:start}
+.plan li::before{counter-increment:p;content:counter(p);font-family:var(--f-mono);font-weight:500;color:var(--accent);border:1.5px solid var(--accent);border-radius:50%;width:1.8rem;height:1.8rem;display:grid;place-items:center;font-size:.85rem}
+.note{background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
+footer{font-size:.84rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:no-preference){a{transition:color .15s}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Scouting de empleo · cierre 9 de octubre de 2026, madrugada</span>
+  <h1>Radar Laboral Enrique</h1>
+  <p class="lede">Bioquímico con máster en mejora genética y dos años en Syngenta (Países Bajos). He revisado unas 150 empresas y organismos en cuatro rondas y he comprobado cada oferta candidata en la web de la empresa o en un boletín oficial. Aquí solo hay ofertas que existen. Las que no he podido confirmar van aparte y marcadas.</p>
+  <div class="stats" role="list">
+    <div class="stat" role="listitem"><b>8</b><span>confirmadas y abiertas</span></div>
+    <div class="stat" role="listitem"><b>9</b><span>existen, sin fecha clara</span></div>
+    <div class="stat" role="listitem"><b>23</b><span>descartadas al comprobar</span></div>
+  </div>
+</header>
+
+<section aria-labelledby="plazos">
+  <h2 id="plazos">Plazos que corren</h2>
+  <p class="intro">Ordenados por fecha de cierre. Las dos del lunes 12 son lo primero que hay que mandar.</p>
+  <ol class="timeline">
+    <li class="hot"><span class="d">lun 12 oct</span><span><b>Biobank Technician</b> en Vall d'Hebron (Barcelona) y <b>Técnico/a de Investigación 41/2026</b> en el Hospital La Princesa (Madrid).</span></li>
+    <li class="hot"><span class="d">vie 23 oct</span><span><b>Proceso de empleo fijo del Grupo Tragsa</b>. Inscripción desde el 9 de octubre hasta las 23:59 del 23.</span></li>
+    <li><span class="d">mar 27 oct</span><span><b>Oposición de Técnicos Auxiliares de Laboratorio (C1)</b> de la Comunidad de Madrid. También el <b>Downstream Analyst</b> de Insud Pharma en León, pendiente de ver requisitos.</span></li>
+    <li><span class="d">sáb 14 nov</span><span><b>Técnico/a Junior de Registros</b> en Lilly (Alcobendas).</span></li>
+    <li><span class="d">sin cierre</span><span>Lilly QC Junior, Lilly Ingeniero/a Junior de QA y Medpace Junior CRA. Siguen abiertas, pero las grandes empresas cierran sin avisar cuando tienen candidatos.</span></li>
+  </ol>
+</section>
+
+<section aria-labelledby="confirmadas">
+  <h2 id="confirmadas">Confirmadas y abiertas</h2>
+  <p class="intro">Cada una aparece en la fuente original con fecha de publicación reciente o con plazo abierto. Los enlaces van a la web de la empresa o del organismo, sin agregadores.</p>
+  <div class="cards">
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Laboratorio</span><span class="mono muted">R-110416</span></div>
+      <h3>Técnica/o Junior de Laboratorio de Control de Calidad</h3>
+      <p class="org">Eli Lilly · Alcobendas (Madrid)</p>
+      <dl>
+        <dt>Publicada</dt><dd class="mono">3 sep 2026</dd>
+        <dt>Sueldo</dt><dd>26.170 – 38.390 € brutos/año, más bonus (rango que muestran Indeed y Glassdoor)</dd>
+        <dt>Pide</dt><dd>Grado en Química, Farmacia, Biología, Biotecnología o similar. Inglés C1. No pide experiencia previa.</dd>
+        <dt>Punto débil</dt><dd>Valora conocer las normas de correcta fabricación (GMP), que no tienes.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> mándala hoy. En la carta, presenta tus SOPs, la trazabilidad de muestras y la documentación técnica de Syngenta como experiencia en entorno regulado. Un curso corto de GMP en el CV lo refuerza mucho (ver más abajo).</p>
+      <a class="link" href="https://careers.lilly.com/us/en/job/R-110416/T%C3%A9cnica-o-Jr-de-Laboratorio-de-Control-de-Calidad">careers.lilly.com · R-110416</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Calidad</span><span class="mono muted">R-112124</span></div>
+      <h3>Ingeniero/a Junior de Garantía de Calidad</h3>
+      <p class="org">Eli Lilly · Alcobendas (Madrid)</p>
+      <dl>
+        <dt>Publicada</dt><dd class="mono">2 oct 2026</dd>
+        <dt>Sueldo</dt><dd>37.590 – 55.150 € brutos/año (rango que publica Lilly)</dd>
+        <dt>Pide</dt><dd>Perfil de ingeniería, preferiblemente química o industrial. Inglés C1. Turno de tarde. Sin experiencia previa.</dd>
+        <dt>Punto débil</dt><dd>Prefieren ingenieros. Lo dicen como preferencia, no como requisito.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> es el mejor sueldo de la lista y no exige experiencia. Mándala junto con la de QC y explica que vienes de laboratorio y documentación, no de ingeniería. Lo peor que puede pasar es que no te llamen.</p>
+      <a class="link" href="https://careers.lilly.com/us/en/job/R-112124/Ingeniero-Junior-de-Garant%C3%ADa-de-Calidad">careers.lilly.com · R-112124</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Operaciones clínicas</span><span class="mono muted">job 12067</span></div>
+      <h3>Junior Clinical Research Associate</h3>
+      <p class="org">Medpace · Madrid (Torre de Cristal)</p>
+      <dl>
+        <dt>Abierta</dt><dd>Publicada el 8 ene 2026, válida hasta ene 2027. Es una bolsa permanente de entrada.</dd>
+        <dt>Sueldo</dt><dd>No consta. Glassdoor da 25.000 – 31.000 € para este nivel en Madrid.</dd>
+        <dt>Pide</dt><dd>Grado en ciencias de la vida, inglés y español fluidos. Sin experiencia clínica: forman con su programa PACE.</dd>
+        <dt>Ojo</dt><dd>Viajes del 60–80 % para visitar hospitales. Tienes carnet y disponibilidad.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> manda la candidatura y el CV en inglés. Es la puerta más directa a operaciones clínicas sin experiencia previa.</p>
+      <a class="link" href="https://careers.medpace.com/jobs/12067?lang=en-us">careers.medpace.com · 12067</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Laboratorio</span><span class="mono muted">ref. 41/2026</span></div>
+      <h3>Técnico/a de Investigación</h3>
+      <p class="org">Fundación de Investigación Biomédica del Hospital La Princesa · Madrid</p>
+      <dl>
+        <dt>Plazo</dt><dd class="mono">5 – 12 oct 2026</dd>
+        <dt>Sueldo</dt><dd>No consta</dd>
+        <dt>Pide</dt><dd>Está en el PDF de la oferta, que no he podido abrir. La anterior del mismo tipo pedía grado en ciencias de la salud, laboratorio biomédico e inglés alto.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> abre "Descargar oferta" en la página y, si encaja, inscríbete antes del lunes.</p>
+      <a class="link" href="https://www.iis-princesa.org/fundacion/ofertas-de-empleo/">iis-princesa.org · ofertas de empleo</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Laboratorio · muestras</span><span class="mono muted">8464139</span></div>
+      <h3>Biobank Technician</h3>
+      <p class="org">Vall d'Hebron Institut de Recerca (VHIR) · Barcelona</p>
+      <dl>
+        <dt>Plazo</dt><dd class="mono">28 sep – 12 oct 2026</dd>
+        <dt>Contrato</dt><dd>Indefinido ligado a un proyecto que acaba en octubre de 2027</dd>
+        <dt>Sueldo</dt><dd>Según convenio, sin cifra</dd>
+        <dt>Pide</dt><dd>FP Superior y experiencia en el sector sanitario (cuenta el Hospital de Parapléjicos). Valora un grado en ciencias de la vida, inglés B2 y un año procesando muestras.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> por funciones es la más parecida a lo que hacías en Syngenta: recepción, registro, extracción de ADN y ARN, alícuotas y stock. Pide la banda salarial antes de comprometerte, porque solo te mudas por 26.000 € o más.</p>
+      <a class="link" href="https://jobs.vhir.org/jobs/8464139-biobank-technician">jobs.vhir.org · Biobank Technician</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Laboratorio · empleo fijo</span></div>
+      <h3>Proceso de empleo fijo 2026 del Grupo Tragsa</h3>
+      <p class="org">Tragsa y Tragsatec, empresa pública · varias sedes, muchas en Madrid</p>
+      <dl>
+        <dt>Plazo</dt><dd class="mono">9 – 23 oct 2026, 23:59</dd>
+        <dt>Contrato</dt><dd>Fijo o fijo discontinuo, por concurso-oposición</dd>
+        <dt>Cómo es</dt><dd>Prueba psicotécnica, méritos (tu grado y tu máster suman) y prueba oral. La prensa habla de 20 € por bloque, gratis si llevas 6 meses inscrito como demandante de empleo.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> entra en la página, abre los anexos que se publicaron el 8 de octubre y apúntate a todos los bloques de técnico de laboratorio o titulado en ciencias que encajen. Mira en cada ficha la experiencia mínima y la ubicación.</p>
+      <a class="link" href="https://www.tragsa.es/es/equipo-humano/unete-a-nuestro-equipo/ofertas-empleo-indefinido/tasas-reposicion-especifica-2025-2026/Paginas/tre-2026-grupo-tragsa.aspx">tragsa.es · TRE 2026</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Laboratorio · oposición</span></div>
+      <h3>Técnicos Auxiliares de Laboratorio Clínico y Agroalimentario (C1)</h3>
+      <p class="org">Comunidad de Madrid · 9 plazas de funcionario</p>
+      <dl>
+        <dt>Plazo</dt><dd class="mono">29 sep – 27 oct 2026</dd>
+        <dt>Pide</dt><dd>Bachiller o FP. Tu grado lo supera. No pide experiencia ni idiomas.</dd>
+        <dt>Sueldo</dt><dd>No consta. Se estima en unos 24.000 – 26.000 € al empezar.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> presentar la solicitud cuesta poco y es una plaza fija para siempre. El examen será en meses, así que no frena lo demás.</p>
+      <a class="link" href="https://www.comunidad.madrid/empleo/tecnicos-auxiliares-laboratorio-clinico-agroalimentario-c1">comunidad.madrid · Laboratorio C1</a>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="chip ok">Confirmada</span><span class="chip sec">Regulatory</span><span class="chip no">Tiro largo</span></div>
+      <h3>Técnico/a Junior de Registros (Regulatory Affairs)</h3>
+      <p class="org">Eli Lilly · Alcobendas (Madrid)</p>
+      <dl>
+        <dt>Abierta</dt><dd>Publicada el 15 jun 2026, válida hasta el 14 nov 2026</dd>
+        <dt>Pide</dt><dd>Ciencias de la Salud (mejor Farmacia), formación en registro de medicamentos, inglés C1 y prácticas previas en registros.</dd>
+        <dt>Punto débil</dt><dd>Te faltan las prácticas y la formación en regulatory.</dd>
+      </dl>
+      <p class="do"><b>Qué hacer:</b> mándala solo si te sobra tiempo. Es la entrada a regulatory que buscas, pero hoy no cumples dos requisitos.</p>
+      <a class="link" href="https://es.indeed.com/viewjob?jk=94990943e42a81b5">Ficha directa en Indeed</a>
+    </article>
+
+  </div>
+</section>
+
+<section aria-labelledby="sinfecha">
+  <h2 id="sinfecha">Existen, pero sin fecha clara</h2>
+  <p class="intro">Están en la web de la empresa o en su portal de empleo, pero no he visto la fecha de publicación. Mandar el CV cuesta diez minutos, así que merecen el intento.</p>
+  <ul class="rows">
+    <li><span class="t">Consultor/a LIMS · Ambidata · Madrid, con viajes</span><span class="muted">Implantar y dar soporte de LIMS a laboratorios. Pide 1 año de laboratorio, Excel y carnet, y conocer las normas ISO 17025 y 9001. Encaje alto: usas LIMS y conoces el laboratorio por dentro.</span><a class="link" href="https://www.ambidata.com/es/trabaja-con-nosotros/consultor-a-lims/">ambidata.com · Consultor/a LIMS</a></li>
+    <li><span class="t">Junior Validation Engineer (validación de sistemas, GxP) · Between · Madrid</span><span class="muted">24.000 – 27.000 €. Te forman en GxP. Piden algo de base en entornos regulados. Es una vía para entrar en farma por la validación de sistemas informáticos.</span><a class="link" href="https://talento.between.tech/">talento.between.tech</a></li>
+    <li><span class="t">Junior Regulatory Affairs Officer · Asphalion · Madrid, Barcelona o remoto</span><span class="muted">Consultora de regulatory que contrata juniors y los forma. No he visto los requisitos.</span><a class="link" href="https://www.asphalion.com/new-opportunities/junior-regulatory-affairs-officer/">asphalion.com · Junior RA Officer</a></li>
+    <li><span class="t">Study Coordinator, Hematología · IBSAL · Salamanca</span><span class="muted">Ref. 32_2026, publicada el 4 de agosto. Pide grado en ciencias de la salud. No muestra fecha de cierre, así que puede seguir abierta. Está a 1 h 15 de Ávila.</span><a class="link" href="https://ibsal.es/en/convocatorias/ref-32_2026-study-coordinator/">ibsal.es · ref. 32_2026</a></li>
+    <li><span class="t">Titulado/a Superior en Investigación, Farmacia hospitalaria · IBSAL · Salamanca</span><span class="muted">Ref. 40_2026. Aparece como convocatoria abierta. Mira plazo y titulación en la ficha.</span><a class="link" href="https://ibsal.es/convocatorias-de-empleo/">ibsal.es · convocatorias</a></li>
+    <li><span class="t">Downstream Analyst · Insud Pharma (mAbxience) · León</span><span class="muted">Su portal la da como válida hasta el 27 de octubre. No he visto los requisitos y es planta de biológicos, así que probablemente pidan GMP.</span><a class="link" href="https://careers.insudpharma.com/insudpharma/jobs/22826?lang=en-us">careers.insudpharma.com · 22826</a></li>
+    <li><span class="t">Técnico/a de Documentación de Servicios Técnicos Analíticos · Normon · Tres Cantos</span><span class="muted">Sale en la lista de empleos de Normon en LinkedIn ("hace una semana"). Requisitos sin ver. Correo de selección: seleccion@normon.com</span><a class="link" href="https://trabajaconnosotros.normon.com/">trabajaconnosotros.normon.com</a></li>
+    <li><span class="t">Analista de Laboratorio TC/PCR · MSD Animal Health · Salamanca</span><span class="muted">Sale en la lista de LinkedIn de MSD. El nombre (cultivo celular y PCR) encaja contigo, pero es planta de vacunas y probablemente pida GMP.</span><a class="link" href="https://jobs.msd.com/es/es/quality-roles">jobs.msd.com · Quality</a></li>
+    <li><span class="t">Técnico/a de Laboratorio de Microbiología · SGS · Barajas (Madrid)</span><span class="muted">Pide FP superior de química o laboratorio, en turno de tarde y sábados alternos. Encaje bajo, pero no exige experiencia.</span><a class="link" href="https://jobs.smartrecruiters.com/SGS/744000096552816-tecnico-a-de-laboratorio-de-microbiologia-">SmartRecruiters · SGS</a></li>
+  </ul>
+</section>
+
+<section aria-labelledby="nl">
+  <h2 id="nl">Países Bajos</h2>
+  <p class="intro">Pediste pocas. No he encontrado ninguna que pueda confirmar en la web de la empresa con fecha. Lo que hay:</p>
+  <ul class="rows">
+    <li><span class="t">Syngenta Enkhuizen, tu antigua empresa</span><span class="muted">Los puestos de laboratorio de su web (Lab Medewerker QC, Seed Health Technician) están caducados. Glassdoor muestra en septiembre un Trait Assessment Technician a 2.853 – 3.565 €/mes, sin confirmar. Lo más eficaz es escribir a tus antiguos jefes y compañeros y preguntar qué va a salir.</span><a class="link" href="https://jobs.syngenta.com/">jobs.syngenta.com</a></li>
+    <li><span class="t">Genmab · Utrecht</span><span class="muted">Hay Research Associates temporales en proteínas (unos 38.000 – 57.000 €), en inglés. No he podido confirmar ninguno abierto ahora. Crea una alerta.</span><a class="link" href="https://careers.genmab.com/">careers.genmab.com</a></li>
+  </ul>
+</section>
+
+<section aria-labelledby="descartes">
+  <h2 id="descartes">Descartadas al comprobar</h2>
+  <p class="intro">Algunas ya te las pasé en rondas anteriores. Te digo por qué caen, para que no pierdas tiempo con ellas.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Oferta</th><th>Por qué cae</th></tr></thead>
+      <tbody>
+        <tr><td>Abbott QA Specialist Jr (Madrid)</td><td>No está en el portal de Abbott. El anuncio parece de 2023.</td></tr>
+        <tr><td>Moderna QC Associate Microbiology</td><td>Solo sale en BioSpace. Pide experiencia en microbiología de control de calidad farmacéutico.</td></tr>
+        <tr><td>Syneos CTA Madrid</td><td>No está en la web de Syneos. Las parecidas pedían 2 años de experiencia en CRO.</td></tr>
+        <tr><td>HM.Clause Breeder Assistant (Almería)</td><td>Solo en agregadores, sin ficha en el portal de Limagrain.</td></tr>
+        <tr><td>Técnico de muestras en el CNIC (NeXT)</td><td>No aparece en ninguna fuente original.</td></tr>
+        <tr><td>Tragsatec, Laboratorios Nacionales de Referencia</td><td>Pide FP y es contrato en prácticas para recién titulados.</td></tr>
+        <tr><td>INIA-CSIC contrato JAE-TEC</td><td>No existe convocatoria publicada.</td></tr>
+        <tr><td>ITACyL bolsa de técnicos</td><td>El plazo cerró el 1 de septiembre.</td></tr>
+        <tr><td>Quirónsalud Study Coordinator</td><td>Cerró el 6 de septiembre.</td></tr>
+        <tr><td>Diagnóstica Longwood, especialista de aplicaciones</td><td>La empresa la ha retirado de su portal.</td></tr>
+        <tr><td>Sanitas, técnico de laboratorio</td><td>Exige el FP de Laboratorio Clínico y paga poco.</td></tr>
+        <tr><td>Eurofins Megalab, técnico de calidad</td><td>Exige experiencia haciendo auditorías.</td></tr>
+        <tr><td>Thermo Fisher TAS I, Rovensa, Toro, Lactalis, Hipra, Dau, Vircell, ISDIN, Health in Code, Anapharm, Rijk Zwaan</td><td>No están en la fuente original, son antiguas o piden experiencia que no tienes.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="espontanea">
+  <h2 id="espontanea">Candidatura espontánea</h2>
+  <p class="intro">Empresas sin oferta abierta ahora, pero donde tu perfil encaja y un correo directo funciona mejor que esperar a que publiquen.</p>
+  <ul class="rows">
+    <li><span class="t">Syngenta España (Madrid)</span><span class="muted">Eres exempleado. Pide a un antiguo compañero que te recomiende internamente.</span><a class="link" href="https://www.syngenta.es/trabaja-en-syngenta">syngenta.es · Trabaja en Syngenta</a></li>
+    <li><span class="t">Fundación Hospital Nacional de Parapléjicos (Toledo)</span><span class="muted">También trabajaste allí. Escribe al grupo en el que estuviste.</span><a class="link" href="https://fhnp.es/ofertas-de-empleo/">fhnp.es · ofertas de empleo</a></li>
+    <li><span class="t">GEICAM, biobanco (San Sebastián de los Reyes)</span><span class="muted">Han tenido un puesto de asistente de ensayos clínicos con gestión de muestras, que es justo tu mezcla. Ahora no hay oferta publicada.</span><a class="link" href="https://www.geicam.org/">geicam.org</a></li>
+    <li><span class="t">Eurofins Megalab (Madrid)</span><span class="muted">Laboratorio central grande. Correo de selección: seleccion@megalab.es</span><a class="link" href="https://es.linkedin.com/company/eurofinsmegalab">LinkedIn · Eurofins Megalab</a></li>
+    <li><span class="t">CNIC, CBGP-UPM, UAM e IdiPAZ (Madrid)</span><span class="muted">Sacan plazas de técnico cada pocas semanas con plazos de 10 a 15 días. Mira sus páginas cada semana.</span><a class="link" href="https://www.cnic.es/es/empleo/ofertas-empleo">cnic.es · ofertas de empleo</a></li>
+    <li><span class="t">AGQ Labs (Coslada) y LETI (Tres Cantos)</span><span class="muted">Laboratorio agroalimentario y control de calidad de inmunoterapia. Las dos piden CV para gestión de muestras o laboratorio.</span><a class="link" href="https://agqlabs.es/ofertas-de-empleo/">agqlabs.es · empleo</a></li>
+  </ul>
+</section>
+
+<section aria-labelledby="mercado">
+  <h2 id="mercado">Lo que dice el mercado</h2>
+  <p>La barrera número uno es la experiencia en GMP (normas de correcta fabricación). Aparece en casi todas las ofertas de laboratorio farmacéutico que he descartado. Sin GMP hay cinco puertas abiertas, y todas salen en esta lista:</p>
+  <ul class="rows">
+    <li><span class="t">Puestos junior "sin experiencia" de multinacionales</span><span class="muted">Lilly en Alcobendas tiene dos ahora mismo.</span></li>
+    <li><span class="t">CROs que forman desde cero</span><span class="muted">Medpace, con su programa de entrada.</span></li>
+    <li><span class="t">Consultoras que forman en LIMS o validación</span><span class="muted">Ambidata y Between.</span></li>
+    <li><span class="t">Fundaciones de investigación y biobancos</span><span class="muted">La Princesa, Vall d'Hebron, IBSAL. Pagan menos y tienen plazos muy cortos.</span></li>
+    <li><span class="t">Empleo público</span><span class="muted">Comunidad de Madrid y Tragsa: lento pero fijo.</span></li>
+  </ul>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo de puesto</th><th>Sueldo de referencia</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td>Técnico en investigación pública (Madrid)</td><td class="n">1.870 €/mes · 21–24 k€</td><td>UAM, CSIC</td></tr>
+        <tr><td>Validación de sistemas junior</td><td class="n">24–27 k€</td><td>Between</td></tr>
+        <tr><td>Junior CRA</td><td class="n">25–31 k€</td><td>Glassdoor</td></tr>
+        <tr><td>Técnico QC junior en farma</td><td class="n">26–38 k€</td><td>Lilly (vía Indeed)</td></tr>
+        <tr><td>Ingeniero junior de QA en farma</td><td class="n">37,6–55 k€</td><td>Lilly</td></tr>
+        <tr><td>Técnico de laboratorio en Países Bajos</td><td class="n">2.850–3.650 €/mes</td><td>Syngenta, Enza (Glassdoor)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Si quieres cobrar más, la industria y las CROs pagan claramente por encima de la investigación pública. Las multinacionales que en Madrid solo tienen oficina comercial (Pfizer, MSD, Sanofi, Novartis) no tienen laboratorio. No pierdas tiempo con ellas.</p>
+</section>
+
+<section aria-labelledby="cv">
+  <h2 id="cv">Ajustes al CV antes de mandar nada</h2>
+  <ul class="rows">
+    <li><span class="t">Añade un curso corto de GMP/BPF y otro de ICH-GCP</span><span class="muted">Hay cursos online de pocas horas, y algunos de GCP son gratuitos. No sustituyen la experiencia, pero quitan el "no sabe nada de GMP" del filtro. Te sirve para Lilly, Medpace y la validación.</span></li>
+    <li><span class="t">Nombra el LIMS que usaste</span><span class="muted">Ahora no aparece en ninguno de tus CV y varias ofertas lo piden con nombre (StarLIMS, LabVantage, SampleManager…).</span></li>
+    <li><span class="t">Acompaña "Assistant breeder" con lo que hacías</span><span class="muted">Por ejemplo: "Assistant breeder · gestión y trazabilidad de muestras y laboratorio molecular (PCR, SNP, NGS)". Así un reclutador de laboratorio no lo descarta por el título.</span></li>
+    <li><span class="t">Unifica fechas y ciudad</span><span class="muted">Analista químico figura desde febrero en un CV y desde marzo de 2023 en el otro. Uno dice Madrid y el otro Ávila. Para Madrid pon "Madrid, disponibilidad inmediata".</span></li>
+    <li><span class="t">Saca a la vista el Hospital de Parapléjicos</span><span class="muted">Es tu experiencia en el sector sanitario, que Vall d'Hebron exige como requisito.</span></li>
+  </ul>
+</section>
+
+<section aria-labelledby="plan">
+  <h2 id="plan">Plan de la semana</h2>
+  <ol class="plan">
+    <li><span><b>Viernes 9:</b> Vall d'Hebron e IIS-Princesa (cierran el lunes), Lilly QC Junior y Lilly Ingeniero/a de QA.</span></li>
+    <li><span><b>Fin de semana:</b> Medpace Junior CRA con el CV en inglés, y apúntate a un curso de GMP y otro de ICH-GCP.</span></li>
+    <li><span><b>Lunes 12 a miércoles 14:</b> fichas de Tragsa e inscripción, solicitud de la oposición de la Comunidad de Madrid, Ambidata, Between y Asphalion.</span></li>
+    <li><span><b>Jueves 15 y viernes 16:</b> correos a Syngenta España, Parapléjicos, GEICAM y Megalab. Pregunta en IBSAL por la 32_2026.</span></li>
+    <li><span><b>A partir de ahí:</b> alertas semanales en CNIC, IdiPAZ, UAM, Lilly, Moderna y Medpace, y un mensaje a tus antiguos compañeros de Syngenta Enkhuizen.</span></li>
+  </ol>
+</section>
+
+<p class="note">Desde el entorno donde trabajo no puedo abrir las páginas de empleo, porque la red las bloquea. Por eso las fechas y requisitos salen del buscador y no de leer cada ficha. Si en los ajustes del entorno amplías el acceso a red, la próxima vez puedo leer las ofertas enteras, PDFs incluidos.</p>
+
+<footer>Preparado la madrugada del 9 de octubre de 2026. Ninguna oferta enlaza a agregadores (Jooble, Jobsora, Jobijoba y similares). Comprueba siempre la fecha en la ficha antes de enviar: las empresas cierran ofertas sin avisar.</footer>
+
+</div>
